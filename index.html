@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Checklist de Tickets — Novetech</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+:root{
+  --bg:#f4f6f8;--surface:#fff;--surface-2:#f8fafc;--border:#dbe1e8;--border-strong:#bdc7d3;
+  --text:#17202a;--muted:#667085;--faint:#98a2b3;--nav:#0b1f33;--accent:#0b6bcb;--accent-soft:#eaf4ff;
+  --green:#178a55;--green-soft:#eaf8f1;--orange:#cf7a10;--orange-soft:#fff5e8;--red:#cf3f3f;--red-soft:#fff0ef;--purple:#7b3fc6;--purple-soft:#f5edff;
+  --radius:14px;--radius-sm:9px;--shadow:0 10px 25px rgba(16,24,40,.06)
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:5rem}
+header{background:linear-gradient(135deg,#08192a,#123b61);color:#fff;padding:1rem 1.25rem;position:sticky;top:0;z-index:20;box-shadow:0 5px 18px rgba(0,0,0,.14)}
+.header-inner{max-width:900px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:15px}.logo-dot{width:9px;height:9px;border-radius:50%;background:#35d07f;box-shadow:0 0 0 4px rgba(53,208,127,.13)}
+.sub{font:11px 'IBM Plex Mono',monospace;color:rgba(255,255,255,.58);text-align:right}
+.container{max-width:900px;margin:0 auto;padding:1.2rem 1rem;display:flex;flex-direction:column;gap:1rem}
+.hero{background:linear-gradient(135deg,#fff,#f4f9ff);border:1px solid #d4e6f8;border-radius:18px;padding:1.1rem 1.2rem;box-shadow:var(--shadow)}
+.hero h1{font-size:20px;margin-bottom:5px}.hero p{font-size:13px;line-height:1.5;color:var(--muted)}
+.module-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:1rem}
+.module-btn{border:1.5px solid var(--border);background:#fff;border-radius:11px;padding:12px 8px;cursor:pointer;font:600 13px 'IBM Plex Sans',sans-serif;color:var(--muted);transition:.15s}
+.module-btn[data-sel="1"]{border-color:var(--accent);background:var(--accent-soft);color:#0b589f;box-shadow:0 0 0 2px rgba(11,107,203,.08)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.15rem;box-shadow:0 4px 14px rgba(16,24,40,.035)}
+.card-label{font:600 10px 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:.9rem}
+.field{margin-bottom:.82rem}.field:last-child{margin-bottom:0}.field>label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:5px}
+.field input,.field textarea,.field select{width:100%;font-size:14px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-2);color:var(--text);font-family:'IBM Plex Sans',sans-serif;outline:none}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px rgba(11,107,203,.08)}
+.field textarea{min-height:92px;resize:vertical}.field .hint{font-size:11px;color:var(--faint);margin-top:5px;line-height:1.4}.field .err{border-color:var(--red);background:var(--red-soft)}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.chip-row{display:flex;flex-wrap:wrap;gap:8px}.chip-btn{padding:8px 13px;border-radius:999px;border:1.5px solid var(--border);background:var(--surface-2);cursor:pointer;font:500 13px 'IBM Plex Sans',sans-serif;color:var(--muted)}
+.chip-btn[data-sel="1"]{background:var(--nav);border-color:var(--nav);color:#fff}
+.section-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:.75rem}.section-head h3{font-size:14px}.section-head p{font-size:11px;color:var(--faint);margin-top:3px}
+.ck-item{display:flex;align-items:flex-start;gap:11px;padding:11px 0;border-bottom:1px solid #edf0f3;cursor:pointer;user-select:none}.ck-item:last-child{border-bottom:none}
+.ck-box{width:22px;height:22px;min-width:22px;margin-top:1px;border-radius:6px;border:1.5px solid var(--border-strong);background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:transparent}
+.ck-item.checked .ck-box{background:var(--green);border-color:var(--green);color:#fff}.ck-item.checked .ck-title{color:#667085}.ck-title{font-size:13px;font-weight:600;line-height:1.35}.ck-desc{font-size:11px;color:var(--faint);line-height:1.35;margin-top:2px}
+.opt-btn{position:relative;width:100%;padding:12px 42px 11px 12px;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:var(--surface-2);cursor:pointer;text-align:left;margin-bottom:8px;font-family:'IBM Plex Sans',sans-serif}.opt-btn:last-child{margin-bottom:0}.opt-btn .ob-title{font-size:13px;font-weight:700;display:block;margin-bottom:2px}.opt-btn .ob-desc{font-size:11px;color:var(--faint);line-height:1.35;display:block}.opt-btn::after{content:'';position:absolute;right:12px;top:50%;transform:translateY(-50%);width:20px;height:20px;border:1.5px solid var(--border-strong);border-radius:50%;background:#fff}.opt-btn[data-sel="1"]{border-width:2px}.opt-btn[data-sel="1"]::after{content:'✓';display:flex;align-items:center;justify-content:center;font-size:12px;background:var(--nav);color:#fff;border-color:var(--nav)}
+.sub-step{margin-top:.8rem;padding-left:1rem;border-left:2px solid var(--border)}.hidden{display:none!important}.tree-q{font-size:13px;font-weight:700;margin-bottom:.55rem}.tree-divider{border:none;border-top:1px solid var(--border);margin:.9rem 0}
+.nivel-badge{display:flex;align-items:center;gap:11px;padding:13px;border-radius:10px;border:1.5px solid}.nv-emergencial{background:var(--purple-soft);border-color:#b78be6;color:#6327a5}.nv-critico{background:var(--red-soft);border-color:#e6938e;color:#9f2929}.nv-alto{background:var(--orange-soft);border-color:#e7b367;color:#8d5307}.nv-medio{background:var(--accent-soft);border-color:#87bceb;color:#145e9e}.nv-baixo{background:var(--green-soft);border-color:#83c9a6;color:#176a44}.nb-icon{font-size:21px}.nb-label{display:block;font-size:10px;font-weight:600;opacity:.7}.nb-val{display:block;font-size:14px;font-weight:800}.nb-desc{display:block;font-size:11px;margin-top:2px}
+.val-alert{display:none;background:var(--red-soft);border:1.5px solid #e6938e;border-radius:10px;padding:12px 14px;color:#9f2929;font-size:12px;font-weight:600}.val-alert ul{padding-left:18px;margin-top:6px}.val-alert li{font-weight:400;margin:3px 0}
+.actions{display:grid;grid-template-columns:1fr;gap:9px}.btn-gerar,.btn-whatsapp,.btn-copiar,.btn-limpar{width:100%;border-radius:11px;padding:13px;font:700 14px 'IBM Plex Sans',sans-serif;cursor:pointer}.btn-gerar{border:none;background:var(--nav);color:#fff}.btn-whatsapp{border:none;background:#1fa855;color:#fff}.btn-copiar{border:1.5px solid var(--border-strong);background:#fff;color:var(--text)}.btn-limpar{border:none;background:transparent;color:var(--faint);text-decoration:underline;text-underline-offset:3px}
+.output-card{display:none}.output-protocolo{font:11px 'IBM Plex Mono',monospace;color:var(--faint);margin-bottom:.6rem}.output-box{background:#f7f8fa;border:1px solid var(--border);border-radius:10px;padding:14px;font:12px/1.7 'IBM Plex Mono',monospace;white-space:pre-wrap;word-break:break-word;margin-bottom:.8rem;max-height:430px;overflow:auto}.smart-title{margin-bottom:1rem;padding:14px;border:1.5px solid #b9d8f5;border-radius:12px;background:linear-gradient(135deg,#f7fbff,#edf6ff)}.smart-title-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:7px}.smart-title-label{font:700 10px 'IBM Plex Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:#0b589f}.smart-title-hint{font-size:11px;color:var(--muted);line-height:1.4;margin-bottom:9px}.smart-title-value{font-size:14px;font-weight:700;line-height:1.45;color:var(--nav);background:#fff;border:1px solid #d7e5f3;border-radius:9px;padding:11px 12px;word-break:break-word}.btn-title{border:1px solid #9fc7eb;background:#fff;color:#0b589f;border-radius:8px;padding:7px 10px;font:700 11px 'IBM Plex Sans',sans-serif;cursor:pointer;white-space:nowrap}
+.module-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;font-size:11px;font-weight:700;background:var(--accent-soft);color:#0b589f;margin-bottom:.7rem}.support-box{display:none;margin-top:.9rem;padding:.9rem;border:1px solid #d7e5f3;border-radius:12px;background:#f8fbff}.support-box.show{display:block}.support-title{font:600 10px 'IBM Plex Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:.6rem}.support-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.support-btn{border:1.5px solid var(--border);background:#fff;border-radius:10px;padding:10px 7px;cursor:pointer;font:600 11px 'IBM Plex Sans',sans-serif;color:var(--muted)}.support-btn[data-sel="1"]{border-color:var(--accent);background:var(--accent-soft);color:#0b589f}@media(max-width:760px){.support-tabs{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:650px){.grid-2{grid-template-columns:1fr}.module-tabs{grid-template-columns:1fr}.module-btn{text-align:left}.header-inner{align-items:flex-start}.sub{font-size:9px}.hero h1{font-size:18px}}
+</style>
+</head>
+<body>
+<header><div class="header-inner"><div class="logo"><span class="logo-dot"></span>Checklist de Abertura de Ticket</div><div class="sub">NOVETECH SOLUÇÕES TECNOLÓGICAS</div></div></header>
+<div class="container">
+  <div class="hero">
+    <h1>Ticket técnico padronizado</h1>
+    <p>Selecione o tipo de atendimento. Em <b>Suporte</b>, escolha o sistema atendido. O formulário carrega o checklist específico e gera a mensagem final pronta para WhatsApp.</p>
+    <div class="module-tabs" id="module-tabs">
+      <button class="module-btn" type="button" data-module="Meeds" data-sel="1">🩺 Meeds</button>
+      <button class="module-btn" type="button" data-module="Suporte" data-sel="0">🛠️ Suporte</button>
+      <button class="module-btn" type="button" data-module="Infraestrutura" data-sel="0">🖥️ Infraestrutura</button>
+    </div>
+    <div class="support-box" id="support-box">
+      <div class="support-title">Selecione o sistema do suporte</div>
+      <div class="support-tabs">
+        <button class="support-btn" type="button" data-support="AtendSaúde" data-sel="1">📱 AtendSaúde</button>
+        <button class="support-btn" type="button" data-support="AtendEndemias" data-sel="0">🦟 AtendEndemias</button>
+        <button class="support-btn" type="button" data-support="eSUS Feedback" data-sel="0">💬 eSUS Feedback</button>
+        <button class="support-btn" type="button" data-support="PEC" data-sel="0">🏥 PEC</button>
+        <button class="support-btn" type="button" data-support="Hospitalar" data-sel="0">🏨 Hospitalar</button>
+        <button class="support-btn" type="button" data-support="AB Território" data-sel="0">🗺️ AB Território</button>
+        <button class="support-btn" type="button" data-support="MaqLarem" data-sel="0">🖨️ MaqLarem</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">01 — Identificação do chamado</div>
+    <div class="module-badge" id="module-badge">🩺 Módulo: Meeds</div>
+    <div class="grid-2">
+      <div class="field"><label>Cliente / Município *</label><input id="cliente" placeholder="Ex: Piraí-RJ"></div>
+      <div class="field"><label>Unidade / Setor *</label><input id="unidade" placeholder="Ex: CEMAIA / Recepção / UBS Centro"></div>
+    </div>
+    <div class="grid-2">
+      <div class="field"><label>Nome do solicitante / usuário *</label><input id="usuario" placeholder="Ex: Maria Silva"></div>
+      <div class="field"><label>Contato do solicitante</label><input id="contato" placeholder="Telefone ou WhatsApp"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-head"><div><div class="card-label" style="margin-bottom:4px">02 — Checklist técnico</div><h3 id="check-title">Verificações — Meeds</h3><p>Marque tudo que já foi conferido antes de encaminhar.</p></div></div>
+    <div id="checklist"></div>
+  </div>
+
+  <div class="card hidden" id="maqlarem-fields">
+    <div class="card-label">Dados do atendimento — MaqLarem</div>
+    <div class="grid-2">
+      <div class="field"><label>Equipamento</label><input id="maq-equipamento" placeholder="Ex: Impressora, scanner, nobreak..."></div>
+      <div class="field"><label>Nº de série</label><input id="maq-serie" placeholder="Número de série do equipamento"></div>
+    </div>
+    <div class="grid-2">
+      <div class="field"><label>Município</label><input id="maq-municipio" placeholder="Município do atendimento"></div>
+      <div class="field"><label>Unidade</label><input id="maq-unidade" placeholder="Nome da unidade"></div>
+    </div>
+    <div class="grid-2">
+      <div class="field"><label>Setor</label><input id="maq-setor" placeholder="Ex: Recepção, farmácia, consultório"></div>
+      <div class="field"><label>Horário disponível</label><input id="maq-horario" placeholder="Ex: 08h às 12h / 13h às 17h"></div>
+    </div>
+    <div class="field"><label>Endereço</label><input id="maq-endereco" placeholder="Endereço completo para atendimento"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">03 — Classificação de urgência</div>
+    <div class="tree-q">1. O problema bloqueia ou impede a execução da atividade?</div>
+    <button class="opt-btn" type="button" data-group="bloqueia" data-val="Sim" data-sel="0"><span class="ob-title">Sim — bloqueia</span><span class="ob-desc">Não existe alternativa para concluir a atividade.</span></button>
+    <button class="opt-btn" type="button" data-group="bloqueia" data-val="Não" data-sel="0"><span class="ob-title">Não — não bloqueia</span><span class="ob-desc">A atividade ainda pode ser feita, embora com impacto.</span></button>
+    <div class="sub-step hidden" id="sub-sim">
+      <div class="tree-q">2. Quantas pessoas estão bloqueadas?</div>
+      <button class="opt-btn" type="button" data-group="qtd-sim" data-val="Todos os usuários bloqueados" data-nivel="emergencial" data-sel="0"><span class="ob-title">🟣 Todos os usuários</span><span class="ob-desc">Operação indisponível de forma geral.</span></button>
+      <button class="opt-btn" type="button" data-group="qtd-sim" data-val="Vários usuários bloqueados" data-nivel="critico" data-sel="0"><span class="ob-title">🔴 Vários usuários</span><span class="ob-desc">Mais de uma pessoa está impedida de trabalhar.</span></button>
+      <button class="opt-btn" type="button" data-group="qtd-sim" data-val="1 usuário bloqueado" data-nivel="alto" data-sel="0"><span class="ob-title">🟠 Apenas 1 usuário</span><span class="ob-desc">Impacto isolado, mas sem alternativa.</span></button>
+    </div>
+    <div class="sub-step hidden" id="sub-nao">
+      <div class="tree-q">2. Qual é o impacto?</div>
+      <button class="opt-btn" type="button" data-group="impacto-nao" data-val="Bug visual sem impacto funcional" data-nivel="baixo" data-sel="0"><span class="ob-title">🟢 Somente visual / melhoria</span><span class="ob-desc">Sem impacto direto na operação.</span></button>
+      <button class="opt-btn" type="button" data-group="impacto-nao" data-val="Funcionalidade degradada para todos" data-nivel="critico" data-sel="0"><span class="ob-title">🔴 Todos afetados</span><span class="ob-desc">Funciona parcialmente para todos.</span></button>
+      <button class="opt-btn" type="button" data-group="impacto-nao" data-val="Funcionalidade degradada para vários" data-nivel="alto" data-sel="0"><span class="ob-title">🟠 Vários afetados</span><span class="ob-desc">Problema atinge um grupo de pessoas.</span></button>
+      <button class="opt-btn" type="button" data-group="impacto-nao" data-val="Funcionalidade degradada para 1 usuário" data-nivel="medio" data-sel="0"><span class="ob-title">🔵 Apenas 1 afetado</span><span class="ob-desc">Impacto isolado e sem bloqueio total.</span></button>
+    </div>
+    <div id="nivel-result" class="hidden"><hr class="tree-divider"><div id="nivel-badge" class="nivel-badge"><span class="nb-icon" id="nb-icon"></span><div><span class="nb-label">Nível identificado</span><span class="nb-val" id="nb-val"></span><span class="nb-desc" id="nb-desc"></span></div></div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">04 — Descrição e evidências</div>
+    <div class="field"><label>O que está acontecendo? *</label><textarea id="descricao" placeholder="Descreva o erro, onde acontece e em qual etapa do fluxo."></textarea><div class="hint">Inclua o comportamento atual e, se possível, o comportamento esperado.</div></div>
+    <div class="grid-2">
+      <div class="field"><label>Quando começou?</label><input id="inicio" placeholder="Ex: Hoje às 14h / após atualização"></div>
+      <div class="field"><label>É recorrente?</label><select id="recorrencia"><option value="Não informado">Selecione</option><option>Sempre</option><option>Intermitente</option><option>Primeira ocorrência</option></select></div>
+    </div>
+    <div class="field"><label>Evidências</label><input id="evidencias" placeholder="Link Jam, print, vídeo, mensagem de erro ou log"></div>
+    <div class="field"><label>Dados adicionais</label><input id="terceiros" placeholder="Ex: CPF/CNS, nome do profissional, IP, patrimônio do equipamento..."></div>
+  </div>
+
+  <div class="val-alert" id="val-alert">⚠️ Revise os campos obrigatórios:<ul id="val-lista"></ul></div>
+  <div class="actions"><button class="btn-gerar" type="button" onclick="gerarTexto()">Gerar mensagem para WhatsApp</button></div>
+
+  <div class="card output-card" id="output-card">
+    <div class="card-label">Mensagem gerada</div>
+    <div class="smart-title" id="smart-title-box">
+      <div class="smart-title-head"><span class="smart-title-label">📝 Título do Ticket</span><button class="btn-title" type="button" id="btn-copiar-titulo" onclick="copiarTitulo()">Copiar título</button></div>
+      <div class="smart-title-hint">O título é gerado automaticamente. Se desejar, altere o texto antes de copiar.</div>
+      <input id="titulo-sugerido" maxlength="120" placeholder="Ex: AtendSaúde | Falha no envio de coletas | Piraí-RJ" style="width:100%;font-size:14px;font-weight:700;padding:11px 12px;border:1px solid #d7e5f3;border-radius:9px;background:#fff;color:var(--nav);font-family:'IBM Plex Sans',sans-serif;outline:none">
+    </div>
+    <div class="output-protocolo" id="output-protocolo"></div><div class="output-box" id="output"></div>
+    <div class="actions"><button class="btn-whatsapp" type="button" onclick="abrirWhatsApp()">Abrir no WhatsApp</button><button class="btn-copiar" type="button" id="btn-copiar" onclick="copiar()">Copiar mensagem</button><button class="btn-limpar" type="button" onclick="limpar()">Preencher novo ticket</button></div>
+  </div>
+</div>
+<script>
+var state={module:'Meeds',supportSystem:'AtendSaúde',bloqueia:'',nivel:'',nivelLabel:'',nivelDesc:'',detalhe:''};
+var checklistData={
+  'Meeds':[
+    ['m1','Acesso e login validados','Confirmou se o usuário consegue acessar o Meeds e se as credenciais estão corretas.'],
+    ['m2','Unidade, perfil e vínculo conferidos','Validou unidade, perfil do profissional e permissões necessárias.'],
+    ['m3','Internet e navegador verificados','Testou conexão, atualização do navegador e funcionamento básico.'],
+    ['m4','Cache limpo e novo login realizado','Limpou cache, encerrou a sessão e acessou novamente.'],
+    ['m5','Teste em outro navegador ou equipamento','Validou se o erro também ocorre fora do ambiente original.'],
+    ['m6','Fluxo do atendimento reproduzido','Repetiu a sequência até o ponto do erro e identificou a etapa exata.'],
+    ['m7','Agenda / profissional / paciente conferidos','Quando aplicável, confirmou dados envolvidos no atendimento ou agendamento.'],
+    ['m8','Evidência coletada','Registrou print, vídeo, Jam, mensagem de erro ou log.']
+  ],
+  'AtendSaúde':[
+    ['a1','Correção / ajuste de DNS','Validou ou realizou a correção do DNS do dispositivo quando necessário.'],
+    ['a2','Data e hora ajustadas','Confirmou data, hora e configuração automática do dispositivo.'],
+    ['a3','Aplicativo atualizado','Verificou e realizou a atualização do AtendSaúde quando disponível.'],
+    ['a4','Versão do AtendSaúde conferida','Confirmou se o aplicativo está na versão orientada para uso.'],
+    ['a5','Geolocalização / GPS ativada','Confirmou se a localização do dispositivo está ativada e funcionando.'],
+    ['a6','Limpeza de dados realizada','Realizou a limpeza de dados do aplicativo quando necessária.'],
+    ['a7','Limpeza de cache realizada','Realizou a limpeza de cache do aplicativo.'],
+    ['a8','Internet / Wi-Fi / dados móveis verificados','Testou a conectividade do tablet ou dispositivo.'],
+    ['a9','Tablet ou dispositivo reiniciado','Realizou a reinicialização completa do equipamento.'],
+    ['a10','Usuário, equipe, área e microárea conferidos','Validou se o profissional está corretamente vinculado.'],
+    ['a11','Sincronização realizada','Executou a sincronização e confirmou se concluiu sem erro.'],
+    ['a12','Cadastro / ficha envolvida localizada','Identificou indivíduo, família, imóvel, visita ou ficha afetada.'],
+    ['a13','Status de envio / sincronização conferido','Validou se há pendência, erro de envio ou registro não sincronizado.'],
+    ['a14','Coletas pendentes verificadas','Confirmou se existem coletas aguardando envio.'],
+    ['a15','Envio das coletas realizado','Confirmou se as coletas pendentes foram enviadas corretamente.'],
+    ['a16','Evidência coletada','Registrou print, vídeo ou mensagem apresentada pelo aplicativo.']
+  ],
+
+  'AtendEndemias':[
+    ['e1','Correção / ajuste de DNS','Validou ou realizou a correção do DNS do dispositivo quando necessário.'],
+    ['e2','Data e hora ajustadas','Confirmou data, hora e configuração automática do dispositivo.'],
+    ['e3','Aplicativo atualizado','Verificou e realizou a atualização do AtendEndemias quando disponível.'],
+    ['e4','Versão do AtendEndemias conferida','Confirmou se o aplicativo está na versão orientada para uso.'],
+    ['e5','Geolocalização / GPS ativada','Confirmou se a localização do dispositivo está ativada e funcionando.'],
+    ['e6','Limpeza de dados realizada','Realizou a limpeza de dados do aplicativo quando necessária.'],
+    ['e7','Limpeza de cache realizada','Realizou a limpeza de cache do aplicativo.'],
+    ['e8','Internet / Wi-Fi / dados móveis verificados','Testou a conectividade do tablet ou dispositivo.'],
+    ['e9','Tablet ou dispositivo reiniciado','Realizou a reinicialização completa do equipamento.'],
+    ['e10','Sincronização realizada','Executou a sincronização e confirmou se concluiu sem erro.'],
+    ['e11','Sincronização manual realizada','Executou a sincronização manual quando necessário.'],
+    ['e12','Sincronização de locais realizada','Confirmou a atualização/sincronização dos locais do agente.'],
+    ['e13','Coletas pendentes verificadas','Confirmou se existem coletas aguardando envio.'],
+    ['e14','Envio das coletas realizado','Confirmou se as coletas pendentes foram enviadas corretamente.'],
+    ['e15','Evidência coletada','Registrou print, vídeo ou mensagem apresentada pelo aplicativo.']
+  ],
+
+  'eSUS Feedback':[
+    ['f1','Usuário identificado','Identificou o usuário/profissional relacionado ao chamado.'],
+    ['f2','Município identificado','Confirmou o município relacionado ao chamado.'],
+    ['f3','Equipe identificada','Registrou a equipe vinculada ao usuário ou ao indicador.'],
+    ['f4','Inconsistência nos indicadores verificada','Identificou qual indicador apresenta divergência, ausência ou valor incorreto.'],
+    ['f5','Erro de sincronização verificado','Confirmou se existe erro, atraso ou falha de sincronização dos dados.'],
+    ['f6','Evidência coletada','Anexou print, vídeo, mensagem ou exemplo que demonstre a inconsistência.']
+  ],
+  'PEC':[
+    ['p1','Acesso ao PEC validado','Confirmou login, perfil e estabelecimento utilizado pelo profissional.'],
+    ['p2','Usuário, equipe e vínculo CNES conferidos','Validou os vínculos necessários para executar a função.'],
+    ['p3','Internet e navegador verificados','Testou conexão, navegador atualizado e acesso em nova sessão.'],
+    ['p4','Cache limpo e novo login realizado','Limpou dados do navegador e refez o acesso.'],
+    ['p5','Fluxo reproduzido no PEC','Repetiu a sequência até o ponto exato do erro.'],
+    ['p6','Cidadão / atendimento / agenda identificados','Registrou os dados necessários para localizar o caso.'],
+    ['p7','Mensagem de erro registrada','Copiou ou fotografou a mensagem exibida pelo PEC.'],
+    ['p8','Evidência coletada','Anexou print, vídeo ou Jam do problema.']
+  ],
+  'Hospitalar':[
+    ['h1','Acesso e login validados','Confirmou se o usuário consegue acessar o sistema hospitalar e se as credenciais estão corretas.'],
+    ['h2','Unidade, setor e perfil conferidos','Validou a unidade, o setor e as permissões do profissional no sistema.'],
+    ['h3','Internet e navegador verificados','Testou conexão, navegador atualizado e funcionamento básico do acesso.'],
+    ['h4','Cache limpo e novo login realizado','Limpou o cache, encerrou a sessão e realizou novo acesso.'],
+    ['h5','Fluxo recepção → triagem validado','Confirmou se o paciente consegue ser encaminhado corretamente da recepção para a triagem.'],
+    ['h6','Fluxo triagem → sala médica validado','Confirmou se o paciente segue corretamente da triagem para o atendimento médico.'],
+    ['h7','Fluxo médico → observação / medicação validado','Verificou o encaminhamento para observação ou sala de medicação quando necessário.'],
+    ['h8','Retorno ao médico / alta validado','Confirmou se o paciente retorna ao médico e se é possível registrar alta ou novo tratamento.'],
+    ['h9','Paciente / atendimento identificado','Registrou os dados necessários para localizar o paciente e o atendimento relacionado ao chamado.'],
+    ['h10','Prescrição / evolução / alta verificadas','Validou as funcionalidades clínicas envolvidas no atendimento, quando aplicável.'],
+    ['h11','Mensagem de erro registrada','Copiou ou registrou exatamente a mensagem de erro apresentada pelo sistema.'],
+    ['h12','Evidência coletada','Anexou print, vídeo ou outra evidência do problema.']
+  ],
+  'MaqLarem':[
+    ['q1','Equipamento identificado','Registrou qual equipamento necessita de atendimento.'],
+    ['q2','Número de série identificado','Registrou o número de série do equipamento.'],
+    ['q3','Município identificado','Confirmou o município onde o equipamento está instalado.'],
+    ['q4','Unidade identificada','Confirmou a unidade onde o equipamento está instalado.'],
+    ['q5','Setor identificado','Confirmou o setor exato onde o equipamento está localizado.'],
+    ['q6','Endereço confirmado','Registrou o endereço completo para visita ou atendimento.'],
+    ['q7','Horário disponível confirmado','Registrou o melhor horário para acesso ao local/equipamento.'],
+    ['q8','Tipo de solicitação definido','Classificou como manutenção, suprimento, instalação ou outro atendimento.'],
+    ['q9','Contador de páginas coletado','Quando aplicável, registrou o contador atual da impressora.'],
+    ['q10','Evidência coletada','Anexou foto, print ou vídeo do equipamento/problema.']
+  ],
+  'AB Território':[
+    ['ab1','Acesso ao AB Território validado','Confirmou se o profissional consegue acessar o sistema/aplicativo normalmente.'],
+    ['ab2','Usuário e vínculo conferidos','Validou o usuário, equipe, área e microárea relacionados ao atendimento.'],
+    ['ab3','Internet / conectividade verificada','Confirmou se o dispositivo possui conexão estável com a internet.'],
+    ['ab4','Sincronização realizada','Executou a sincronização e confirmou se concluiu sem apresentar erro.'],
+    ['ab5','Cadastros e território conferidos','Validou os cadastros, famílias, imóveis ou cidadãos relacionados ao problema.'],
+    ['ab6','Equipe / área / microárea identificadas','Registrou as informações territoriais necessárias para análise do chamado.'],
+    ['ab7','Fluxo do problema reproduzido','Repetiu o procedimento até identificar a etapa exata em que ocorre a inconsistência.'],
+    ['ab8','Mensagem de erro registrada','Registrou a mensagem apresentada pelo sistema, quando houver.'],
+    ['ab9','Evidência coletada','Anexou print, vídeo ou outra evidência que demonstre o problema.']
+  ],
+  'Infraestrutura':[
+    ['i1','Energia e cabos verificados','Confirmou tomadas, fontes, cabos de rede, USB e demais conexões físicas.'],
+    ['i2','Equipamento reiniciado','Desligou e ligou corretamente computador, impressora, roteador ou periférico.'],
+    ['i3','Internet / conectividade verificada','Validou internet, acesso à rede local e navegação.'],
+    ['i4','Limpeza de certificado realizada','Removeu/limpou certificados antigos ou inválidos quando aplicável.'],
+    ['i5','Reinicialização da VM realizada','Reiniciou a máquina virtual quando necessário.'],
+    ['i6','Servidor parado verificado','Confirmou se existe serviço ou servidor parado/indisponível.'],
+    ['i7','Instalação da VM realizada','Realizou ou validou a instalação/configuração da máquina virtual.'],
+    ['i8','Substituição de equipamentos e acessórios','Registrou troca de equipamento, fonte, cabo, teclado, mouse ou outro acessório.'],
+    ['i9','Instalação de outros programas','Realizou ou validou a instalação de softwares adicionais necessários.'],
+    ['i10','IP / nome do equipamento identificados','Registrou IP, hostname ou identificação técnica quando disponível.'],
+    ['i11','Patrimônio / modelo / serial coletados','Anotou identificação do equipamento para facilitar o atendimento.'],
+    ['i12','Evidência coletada','Registrou foto, print, vídeo ou log do problema.']
+  ]
+};
+var nivelConfig={emergencial:{icon:'🟣',label:'Emergencial',cls:'nv-emergencial',desc:'Ação imediata — operação bloqueada para todos'},critico:{icon:'🔴',label:'Crítico',cls:'nv-critico',desc:'Impacto relevante para vários usuários ou para toda a operação'},alto:{icon:'🟠',label:'Alto',cls:'nv-alto',desc:'Bloqueio isolado ou degradação relevante'},medio:{icon:'🔵',label:'Médio',cls:'nv-medio',desc:'Impacto isolado, sem bloqueio total'},baixo:{icon:'🟢',label:'Baixo',cls:'nv-baixo',desc:'Impacto leve, visual ou solicitação de melhoria'}};
+function renderChecklist(){var box=document.getElementById('checklist');box.innerHTML='';var key=state.module==='Suporte'?state.supportSystem:state.module;checklistData[key].forEach(function(x){var d=document.createElement('div');d.className='ck-item';d.setAttribute('data-id',x[0]);d.innerHTML='<div class="ck-box">✓</div><div><div class="ck-title">'+x[1]+'</div><div class="ck-desc">'+x[2]+'</div></div>';box.appendChild(d)});document.getElementById('check-title').textContent='Verificações — '+key;var icons={'Meeds':'🩺','Suporte':'🛠️','Infraestrutura':'🖥️'};document.getElementById('module-badge').textContent=icons[state.module]+' Módulo: '+state.module+(state.module==='Suporte'?' • '+state.supportSystem:'');document.getElementById('support-box').classList.toggle('show',state.module==='Suporte');document.getElementById('maqlarem-fields').classList.toggle('hidden',!(state.module==='Suporte'&&state.supportSystem==='MaqLarem'))}
+function mostrarNivel(nivel,detalhe){var c=nivelConfig[nivel];state.nivel=nivel;state.nivelLabel=c.icon+' '+c.label;state.nivelDesc=c.desc;state.detalhe=detalhe;var b=document.getElementById('nivel-badge');b.className='nivel-badge '+c.cls;document.getElementById('nb-icon').textContent=c.icon;document.getElementById('nb-val').textContent=c.label;document.getElementById('nb-desc').textContent=c.desc;document.getElementById('nivel-result').classList.remove('hidden')}
+function esconderNivel(){state.nivel='';state.nivelLabel='';state.nivelDesc='';state.detalhe='';document.getElementById('nivel-result').classList.add('hidden')}
+document.addEventListener('click',function(e){var mod=e.target.closest('.module-btn');if(mod){document.querySelectorAll('.module-btn').forEach(function(b){b.setAttribute('data-sel','0')});mod.setAttribute('data-sel','1');state.module=mod.getAttribute('data-module');renderChecklist();return}var sup=e.target.closest('.support-btn');if(sup){document.querySelectorAll('.support-btn').forEach(function(b){b.setAttribute('data-sel','0')});sup.setAttribute('data-sel','1');state.supportSystem=sup.getAttribute('data-support');renderChecklist();return}var ck=e.target.closest('.ck-item');if(ck){ck.classList.toggle('checked');return}var btn=e.target.closest('.opt-btn');if(!btn)return;var group=btn.getAttribute('data-group');document.querySelectorAll('.opt-btn[data-group="'+group+'"]').forEach(function(b){b.setAttribute('data-sel','0')});btn.setAttribute('data-sel','1');if(group==='bloqueia'){state.bloqueia=btn.getAttribute('data-val');document.querySelectorAll('.opt-btn[data-group="qtd-sim"],.opt-btn[data-group="impacto-nao"]').forEach(function(b){b.setAttribute('data-sel','0')});esconderNivel();if(state.bloqueia==='Sim'){document.getElementById('sub-sim').classList.remove('hidden');document.getElementById('sub-nao').classList.add('hidden')}else{document.getElementById('sub-nao').classList.remove('hidden');document.getElementById('sub-sim').classList.add('hidden')}}if(group==='qtd-sim'||group==='impacto-nao')mostrarNivel(btn.getAttribute('data-nivel'),btn.getAttribute('data-val'))});
+function getAcoes(){var arr=[];document.querySelectorAll('.ck-item.checked').forEach(function(item){var t=item.querySelector('.ck-title');if(t)arr.push('✅ '+t.textContent)});return arr.length?arr.join('\n'):'Nenhuma verificação marcada'}
+function gerarProtocolo(){var n=new Date(),p=function(v){return String(v).padStart(2,'0')};return 'NVT-'+n.getFullYear()+p(n.getMonth()+1)+p(n.getDate())+'-'+p(n.getHours())+p(n.getMinutes())+p(n.getSeconds())}
+function normalizarTitulo(txt){return (txt||'').replace(/\s+/g,' ').replace(/[\r\n]+/g,' ').trim()}
+function detectarAssunto(desc){var d=(desc||'').toLowerCase();var regras=[
+  {r:/(coleta|coletas).*(env|sub|sincron)|envio.*coleta/,t:'Falha no envio de coletas'},
+  {r:/(sincroniza|sincronização|sincronizacao|sincronismo).*(erro|falha|não|nao|pend)|erro.*sincron/,t:'Erro de sincronização'},
+  {r:/(login|acesso|senha|credencial).*(erro|falha|não|nao|bloq)|não.*acess|nao.*acess/,t:'Falha de acesso'},
+  {r:/(indicador|indicadores).*(inconsist|diverg|incorret|ausent)|inconsist.*indicador/,t:'Inconsistência em indicadores'},
+  {r:/(impressora|toner|tonner|suprimento|cartucho)/,t:'Atendimento de impressora / suprimento'},
+  {r:/(servidor).*(parad|indispon|offline|fora)|serviço.*parad|servico.*parad/,t:'Servidor indisponível'},
+  {r:/(vm|máquina virtual|maquina virtual).*(reinic|instala|erro|falha|parad)/,t:'Atendimento em máquina virtual'},
+  {r:/(internet|rede|conexão|conexao).*(sem|falha|instab|lenta|não|nao)|sem.*internet/,t:'Falha de internet / rede'},
+  {r:/(certificado).*(erro|falha|expir|limp|invál|inval)/,t:'Problema com certificado'},
+  {r:/(instala|instalação|instalacao).*(programa|software|aplicativo)/,t:'Instalação de programa'},
+  {r:/(equipamento|acessório|acessorio).*(troca|substit|defeito|quebrad)/,t:'Substituição de equipamento / acessório'},
+  {r:/(agenda|agendamento).*(erro|falha|não|nao|indispon)/,t:'Falha em agendamento'},
+  {r:/(prescri|receita).*(erro|falha|não|nao|abre|abrir)/,t:'Falha na prescrição'},
+  {r:/(cadastro|ficha|indivíduo|individuo|família|familia|imóvel|imovel).*(erro|falha|duplic|não|nao|pend)/,t:'Problema em cadastro / ficha'}
+];for(var i=0;i<regras.length;i++){if(regras[i].r.test(d))return regras[i].t}var limpo=normalizarTitulo(desc).replace(/^(erro|problema|falha|solicitação|solicitacao)\s*[:\-–—]?\s*/i,'');if(limpo.length>62)limpo=limpo.slice(0,62).replace(/\s+\S*$/,'')+'…';return limpo||'Análise de chamado'}
+function gerarTituloInteligente(){var cliente=normalizarTitulo(document.getElementById('cliente').value);var desc=normalizarTitulo(document.getElementById('descricao').value);var sistema=state.module==='Suporte'?state.supportSystem:state.module;var assunto=detectarAssunto(desc);var titulo=sistema+' | '+assunto;if(cliente)titulo+=' | '+cliente;document.getElementById('titulo-sugerido').textContent=titulo;return titulo}
+function normalizarTitulo(txt){return (txt||'').replace(/\s+/g,' ').trim()}
+function detectarAssunto(desc){var d=(desc||'').toLowerCase(),r=[
+[/coleta|coletas/,'Falha no envio de coletas'],[/sincron/,'Erro de sincronização'],[/login|acesso|senha/,'Falha de acesso'],[/indicador/,'Inconsistência em indicadores'],[/impressora|toner|tonner|suprimento|cartucho/,'Atendimento de impressora / suprimento'],[/servidor/,'Servidor indisponível'],[/internet|rede|conexão|conexao/,'Falha de internet / rede'],[/certificado/,'Problema com certificado'],[/agenda|agendamento/,'Falha em agendamento'],[/prescri|receita/,'Falha na prescrição'],[/cadastro|ficha/,'Problema em cadastro / ficha']];
+for(var i=0;i<r.length;i++)if(r[i][0].test(d))return r[i][1];var x=normalizarTitulo(desc);if(x.length>62)x=x.slice(0,62)+'…';return x||'Análise de chamado'}
+function gerarTituloEditavel(){var c=document.getElementById('titulo-sugerido');if(!c)return;var uni=normalizarTitulo(document.getElementById('unidade').value),d=normalizarTitulo(document.getElementById('descricao').value),assunto=detectarAssunto(d);if(assunto.length>42)assunto=assunto.slice(0,42).replace(/\s+\S*$/,'')+'…';c.value=(uni?uni+' | ':'')+(assunto||'Análise de chamado')}
+function copiarTitulo(){var el=document.getElementById('titulo-sugerido');var txt=el.value.trim();var btn=document.getElementById('btn-copiar-titulo');if(!txt){el.focus();btn.textContent='Digite um título';setTimeout(function(){btn.textContent='Copiar título'},1800);return}var ok=function(){btn.textContent='✅ Copiado!';setTimeout(function(){btn.textContent='Copiar título'},2200)};if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(ok).catch(function(){fallback(txt);ok()});else{fallback(txt);ok()}}
+function validar(){var erros=[];document.querySelectorAll('.err').forEach(function(e){e.classList.remove('err')});['cliente','unidade','usuario','descricao'].forEach(function(id){var e=document.getElementById(id);if(!e.value.trim()){e.classList.add('err');erros.push(id==='cliente'?'Cliente / Município':id==='unidade'?'Unidade / Setor':id==='usuario'?'Solicitante / Usuário':'Descrição do problema')}});if(!state.bloqueia)erros.push('Classificação: informar se o problema bloqueia');else if(!state.nivel)erros.push('Classificação: concluir a pergunta de impacto');var a=document.getElementById('val-alert'),l=document.getElementById('val-lista');if(erros.length){l.innerHTML=erros.map(function(x){return '<li>'+x+'</li>'}).join('');a.style.display='block';a.scrollIntoView({behavior:'smooth',block:'nearest'});return false}a.style.display='none';return true}
+function gerarTexto(){if(!validar())return;var protocolo=gerarProtocolo(),cliente=document.getElementById('cliente').value.trim(),unidade=document.getElementById('unidade').value.trim(),usuario=document.getElementById('usuario').value.trim(),contato=document.getElementById('contato').value.trim()||'Não informado',desc=document.getElementById('descricao').value.trim(),inicio=document.getElementById('inicio').value.trim()||'Não informado',rec=document.getElementById('recorrencia').value,ev=document.getElementById('evidencias').value.trim()||'Sem evidências informadas',extra=document.getElementById('terceiros').value.trim();var tituloModulo=state.module==='Suporte'?'SUPORTE — '+state.supportSystem.toUpperCase():state.module.toUpperCase();var txt='🚨 *TICKET TÉCNICO — '+tituloModulo+'*\n';txt+='🆔 *Protocolo:* '+protocolo+'\n';txt+='━━━━━━━━━━━━━━━━━━\n';txt+='🏥 *Cliente:* '+cliente+'\n';txt+='📍 *Unidade/Setor:* '+unidade+'\n';txt+='👤 *Solicitante:* '+usuario+'\n';txt+='📞 *Contato:* '+contato+'\n';if(state.module==='Suporte'&&state.supportSystem==='MaqLarem'){var mq={equipamento:document.getElementById('maq-equipamento').value.trim(),serie:document.getElementById('maq-serie').value.trim(),municipio:document.getElementById('maq-municipio').value.trim(),unidade:document.getElementById('maq-unidade').value.trim(),setor:document.getElementById('maq-setor').value.trim(),endereco:document.getElementById('maq-endereco').value.trim(),horario:document.getElementById('maq-horario').value.trim()};txt+='━━━━━━━━━━━━━━━━━━\n';txt+='🖨️ *Equipamento:* '+(mq.equipamento||'Não informado')+'\n';txt+='🔢 *Nº de série:* '+(mq.serie||'Não informado')+'\n';txt+='🏙️ *Município:* '+(mq.municipio||'Não informado')+'\n';txt+='🏥 *Unidade:* '+(mq.unidade||'Não informado')+'\n';txt+='🏢 *Setor:* '+(mq.setor||'Não informado')+'\n';txt+='📍 *Endereço:* '+(mq.endereco||'Não informado')+'\n';txt+='🕒 *Horário disponível:* '+(mq.horario||'Não informado')+'\n'}txt+='━━━━━━━━━━━━━━━━━━\n';txt+='✅ *Checklist realizado:*\n'+getAcoes()+'\n';txt+='━━━━━━━━━━━━━━━━━━\n';txt+='⚡ *Urgência:* '+state.nivelLabel+'\n';txt+='📊 *Impacto:* '+state.detalhe+'\n';txt+='━━━━━━━━━━━━━━━━━━\n';txt+='📋 *Problema:*\n'+desc+'\n';txt+='🕒 *Início:* '+inicio+'\n';txt+='🔁 *Recorrência:* '+rec+'\n';txt+='━━━━━━━━━━━━━━━━━━\n';txt+='📎 *Evidências:* '+ev+'\n';if(extra)txt+='📌 *Dados adicionais:* '+extra+'\n';txt+='━━━━━━━━━━━━━━━━━━';gerarTituloEditavel();document.getElementById('output-protocolo').textContent='Protocolo gerado: '+protocolo;document.getElementById('output').textContent=txt;var c=document.getElementById('output-card');c.style.display='block';setTimeout(function(){c.scrollIntoView({behavior:'smooth',block:'start'})},100)}
+function copiar(){var txt=document.getElementById('output').textContent,btn=document.getElementById('btn-copiar');var ok=function(){btn.textContent='✅ Copiado!';setTimeout(function(){btn.textContent='Copiar mensagem'},2200)};if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(ok).catch(function(){fallback(txt);ok()});else{fallback(txt);ok()}}
+function fallback(txt){var t=document.createElement('textarea');t.value=txt;t.style.position='fixed';t.style.opacity='0';document.body.appendChild(t);t.focus();t.select();try{document.execCommand('copy')}catch(e){}document.body.removeChild(t)}
+function abrirWhatsApp(){var txt=document.getElementById('output').textContent;if(!txt){gerarTexto();txt=document.getElementById('output').textContent;if(!txt)return}window.open('https://wa.me/?text='+encodeURIComponent(txt),'_blank')}
+function limpar(){['cliente','unidade','usuario','contato','descricao','inicio','evidencias','terceiros','maq-equipamento','maq-serie','maq-municipio','maq-unidade','maq-setor','maq-endereco','maq-horario'].forEach(function(id){var el=document.getElementById(id);if(el)el.value=''});document.getElementById('recorrencia').value='Não informado';document.querySelectorAll('.opt-btn').forEach(function(b){b.setAttribute('data-sel','0')});document.getElementById('sub-sim').classList.add('hidden');document.getElementById('sub-nao').classList.add('hidden');document.getElementById('nivel-result').classList.add('hidden');document.getElementById('val-alert').style.display='none';document.getElementById('output-card').style.display='none';document.getElementById('titulo-sugerido').value='';state.bloqueia='';state.nivel='';state.nivelLabel='';state.nivelDesc='';state.detalhe='';renderChecklist();window.scrollTo({top:0,behavior:'smooth'})}
+renderChecklist();
+</script>
+</body>
+</html>
